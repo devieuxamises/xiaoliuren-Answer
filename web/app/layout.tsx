@@ -1,0 +1,4 @@
+import type {Metadata,Viewport} from "next";import "./globals.css";import "./theory.css";import "./ai.css";
+export const metadata:Metadata={title:"小六壬数研",description:"天地人三宫小六壬起卦、解卦与规则研究",manifest:"/manifest.webmanifest",icons:{icon:"/app-icon.png",apple:"/app-icon.png"}};
+export const viewport:Viewport={width:"device-width",initialScale:1,themeColor:"#9f211d"};
+export default function Layout({children}:{children:React.ReactNode}){return <html lang="zh-CN"><body>{children}<script dangerouslySetInnerHTML={{__html:'if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").then(function(r){r.update()});var reloading=false;navigator.serviceWorker.addEventListener("controllerchange",function(){if(!reloading){reloading=true;location.reload()}})})}'}}/></body></html>}

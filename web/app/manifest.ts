@@ -1,0 +1,1 @@
+import type {MetadataRoute} from "next";export default function manifest():MetadataRoute.Manifest{return{name:"小六壬数研",short_name:"六壬数研",description:"天地人三宫起卦、解卦与规则研究",start_url:"/",display:"standalone",background_color:"#f4efe3",theme_color:"#9f2f2f",lang:"zh-CN",icons:[{src:"/app-icon.png",sizes:"1024x1024",type:"image/png",purpose:"any maskable"}]}}
