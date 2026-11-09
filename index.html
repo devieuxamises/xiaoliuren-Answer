@@ -17,7 +17,6 @@
 <body class="bg-pattern min-h-screen">
 <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
 
-  <!-- 头部 -->
   <header class="text-center space-y-1">
     <h1 class="text-2xl font-bold tracking-wide flex items-center justify-center gap-2">
       <span class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-400">六</span>
@@ -93,7 +92,7 @@
     <details class="text-xs text-slate-400 border border-slate-800 rounded-xl p-3">
       <summary class="cursor-pointer select-none text-slate-300">⚙️ 启用 DeepSeek AI 深度解卦（可选）</summary>
       <div class="mt-3 space-y-2">
-        <p class="text-slate-500">填入 DeepSeek API Key 后，起卦会额外生成一段 AI 个性化解卦。Key 只保存在本机浏览器，直接发送到 DeepSeek 官方接口，不经过任何第三方。</p>
+        <p class="text-slate-500">填入 DeepSeek API Key 后，起卦会额外生成 AI 深度解读。Key 只保存在本机浏览器，直接发送到 DeepSeek 官方接口。</p>
         <input id="key" type="password" placeholder="粘贴 sk- 开头的 DeepSeek Key" autocomplete="off" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400/60">
         <button onclick="saveKey()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200">保存</button>
         <span id="keyStatus" class="ml-2 text-emerald-400"></span>
@@ -101,7 +100,6 @@
     </details>
   </div>
 
-  <!-- 结果区 -->
   <div id="result" class="hidden space-y-4"></div>
 
   <footer class="text-center text-[11px] text-slate-600 pb-4">
@@ -110,41 +108,53 @@
 </div>
 
 <script>
-/* ============ 六神知识库（邵一尘版） ============ */
+/* ================= 六神完整知识库（邵一尘版） ================= */
 const G = [
-  { n:"大安", e:"木", full:"阳木", beast:"青龙", luck:"大吉", dir:"东方", zhi:"寅卯", num:"1·4·5", gan:"甲藏丁",
-    trait:"青龙木，因「安」生「逸」，主静、缺主动，宜守不宜冒进。", verse:"身不动",
-    body:"左腿、肝胆；整体偏安，多主平缓无大碍",
-    kind:{ 事业:"机关、办公室、老板、高级军官、稳定单位", 感情:"家庭、夫妻、房产、长时间", 财运:"正财、大额财富、进账", 健康:"整体安泰，小病无妨", 出行:"平安，或暂缓亦吉", 失物:"去不远，静心可寻回" } },
-  { n:"留连", e:"土", full:"阴土", beast:"腾蛇", luck:"小凶", dir:"四隅", zhi:"丑辰未戌", num:"2·7·8", gan:"己并丁",
-    trait:"四方土，六神中唯一具变数的宫，晚上测到多有变数；拖延、暗昧、纠缠、拐弯转角不通畅。", verse:"事难成",
-    body:"左臂、心肾胃；慢性或反复",
-    kind:{ 事业:"暗藏、调查、古玩、关系网", 感情:"暧昧、三角、拖延、复杂", 财运:"松动、留不住、偏财", 健康:"缠绵反复，需耐心调理", 出行:"阻滞，宜暂缓", 失物:"被遮挡、压住、遗忘在角落" } },
-  { n:"速喜", e:"火", full:"阳火", beast:"朱雀", luck:"中吉", dir:"南方", zhi:"巳午", num:"3·6·9", gan:"丙藏辛",
-    trait:"朱雀火，迅猛但「一烧即过」；测考试、谈判等短暂事必过，但拖延则生变。", verse:"人便至",
-    body:"头脑、血液、心脑；急性表现",
-    kind:{ 事业:"领导、中层、急救、快速反应", 感情:"喜事、升温、顺产", 财运:"流动资金、进账快", 健康:"急性、发热、恢复快", 出行:"顺利，宜南行", 失物:"明亮处、热源旁、路上" } },
-  { n:"赤口", e:"金", full:"阳金", beast:"白虎", luck:"中凶", dir:"西方", zhi:"申酉", num:"4·1·2", gan:"庚藏癸",
-    trait:"白虎金，「伤人之虎」，主口舌、官非、惊恐、伤灾；断出行多应意外（比空亡更凶），断生意多应破财纠纷。", verse:"官事凶",
-    body:"右臂、肺肠胃；外伤疼痛",
-    kind:{ 事业:"贸易、销售、金融、手术", 感情:"争吵、争夺、互相伤害", 财运:"破财、纠纷、财口", 健康:"外伤、炎症、咽喉口舌，尽快就医", 出行:"有惊，防意外", 失物:"金属旁、门口、西侧" } },
-  { n:"小吉", e:"水", full:"阴水", beast:"玄武", luck:"小吉", dir:"北方", zhi:"亥子", num:"5·3·8", gan:"壬甲漂",
-    trait:"玄武水，「溪流之水」，吉但力量小、发展慢、成效有限，需加倍努力。", verse:"人来喜",
-    body:"右腿、肾水肝肠；恢复平顺",
-    kind:{ 事业:"文职、文化、社区、基金保险", 感情:"专一、顾家、和合", 财运:"正偏财、耗财漏财", 健康:"向愈，渐安", 出行:"大吉，行人即至", 失物:"水边、包袋、途中" } },
-  { n:"空亡", e:"土", full:"阳土", beast:"勾陈", luck:"大凶", dir:"中央", zhi:"借丑寅", num:"6·5·10", gan:"戊藏乙",
-    trait:"勾陈土，「灵空太极点」，凡测先以凶论；论病三况——不治之症、非器质约五月渐愈、癔症。", verse:"事不长",
-    body:"膀胱、生殖、脾脑；虚症以检查为准",
-    kind:{ 事业:"航空、土地、古董商、富二代", 感情:"异地、分手、离婚、关系僵硬", 财运:"无财、破产、转贷", 健康:"信息不明，勿以卦代医", 出行:"不顺，宜另择", 失物:"寻不见，可能已不在原处" } }
+  { n:"大安", e:"木", beast:"青龙", luck:"大吉", score:2, dir:"东方", zhi:"寅卯", num:"1·4·5", gan:"甲藏丁", verse:"身不动",
+    trait:"青龙木，因「安」生「逸」，主静、缺主动，宜守不宜冒进。",
+    body:"左腿、肝胆",
+    asp:{ 事业:"国家、机关、集团、厂房、办公室、老板、高级军官、稳定单位、警察", 婚姻:"长时间、家庭、夫妻、房产、婆媳", 财运:"正财、大额财富、进账", 性格:"安逸、稳重、城府深、守本分", 物品:"木属性、木床木桌、纸张、汽车火车飞机", 房屋:"房顶长方形、高档住宅、家属楼", 学业:"博士研究生、大学、学习拔尖、班长", 官司:"胜诉、一审二审判决", 方向:"东、东南、东北", 天气:"晴、干旱干燥", 风力:"大风6-7级", 数应:"1·4·5" } },
+  { n:"留连", e:"土", beast:"腾蛇", luck:"小凶", score:-1, dir:"四隅", zhi:"丑辰未戌", num:"2·7·8", gan:"己并丁", verse:"事难成",
+    trait:"四方土，六神中唯一具变数的宫，晚上测到多有变数；拖延、暗昧、纠缠、拐弯转角不通畅。",
+    body:"左臂、心肾胃",
+    asp:{ 事业:"暗藏、调查科、私人侦探、古玩古董、墓地、情报", 婚姻:"暧昧、三角、拖延、复杂、怨", 财运:"松动、留不住、偏财", 性格:"自私、懒散、封闭自闭、忧郁", 物品:"短、弯曲、暗色、稀有珍藏", 房屋:"弯曲、凌乱、阴暗、潮湿", 学业:"留学留级、转学、偏门玄学、成绩倒数", 官司:"维持原判、证据不足", 方向:"四角、角落、暗藏处", 天气:"阴晴多云、雾霾", 风力:"大风5-6级", 数应:"2·7·8" } },
+  { n:"速喜", e:"火", beast:"朱雀", luck:"中吉", score:1, dir:"南方", zhi:"巳午", num:"3·6·9", gan:"丙藏辛", verse:"人便至",
+    trait:"朱雀火，迅猛但「一烧即过」；测考试、谈判等短暂事必过，但拖延则生变。",
+    body:"头脑、血液、心脑",
+    asp:{ 事业:"领导、中层、急救、快速反应、商场、主刀医生", 婚姻:"喜事、升温、顺产、和睦", 财运:"流动资金、进账快、出账", 性格:"活跃、自来熟、闯劲、急躁", 物品:"火光灯光、手机电脑、电源电线、打火机", 房屋:"上宽下窄、朝阳、地热", 学业:"化学、热门专业、艺术体操", 官司:"一审判决、强制执行", 方向:"南、西南、西北、东北", 天气:"干热湿热、阵雨雷阵雨", 风力:"大风6级", 数应:"3·6·9" } },
+  { n:"赤口", e:"金", beast:"白虎", luck:"中凶", score:-2, dir:"西方", zhi:"申酉", num:"4·1·2", gan:"庚藏癸", verse:"官事凶",
+    trait:"白虎金，「伤人之虎」，主口舌、官非、惊恐、伤灾；断出行多应意外（比空亡更凶），断生意多应破财纠纷。",
+    body:"右臂、肺肠胃",
+    asp:{ 事业:"贸易、销售、金融、股票、手术室、外交", 婚姻:"争吵、争夺、互相伤害", 财运:"破财、纠纷、财口", 性格:"争强好斗、能说会道、守口如瓶", 物品:"金属、芯片、锤子、铁链、钉子", 房屋:"突出、直立、有尖", 学业:"地理、玄学、武术、成绩一般", 官司:"审判、听天由命", 方向:"西、西南、西北", 天气:"（原文缺）", 风力:"大风3-6级", 数应:"4·1·2" } },
+  { n:"小吉", e:"水", beast:"玄武", luck:"小吉", score:1, dir:"北方", zhi:"亥子", num:"5·3·8", gan:"壬甲漂", verse:"人来喜",
+    trait:"玄武水，「溪流之水」，吉但力量小、发展慢、成效有限，需加倍努力。",
+    body:"右腿、肾水肝肠",
+    asp:{ 事业:"文职、文化、社区、基金保险、海洋局", 婚姻:"专一、顾家、和合、顺产", 财运:"正偏财、耗财漏财", 性格:"踏实、稳重、斯文、细心", 物品:"水、饮料、液体、艺术品化妆品", 房屋:"波浪形、圆形", 学业:"美术语文、写作绘画舞蹈", 官司:"终审判决", 方向:"北、西北", 天气:"（原文缺）", 风力:"大风8-11级", 数应:"5·3·8" } },
+  { n:"空亡", e:"土", beast:"勾陈", luck:"大凶", score:-2, dir:"中央", zhi:"借丑寅", num:"6·5·10", gan:"戊藏乙", verse:"事不长",
+    trait:"勾陈土，「灵空太极点」，凡测先以凶论；论病三况——不治之症、非器质约五月渐愈、癔症。",
+    body:"膀胱、生殖、脾脑",
+    asp:{ 事业:"航空、土地、建筑、古董商、富二代", 婚姻:"异地、分手离婚、关系僵硬", 财运:"无财、破产、转贷", 性格:"老实实在、幻想、宅、空谈", 物品:"空杯空房、石碑、玉石陶瓷、墙壁", 房屋:"形状方厚、稳重", 学业:"研究生、出国留学、异地学校", 官司:"官司无望、听天由命", 方向:"中央、空旷", 天气:"（原文缺）", 风力:"大风6-11级", 数应:"6·5·10" } }
 ];
 
+/* 五行生克 */
 const WX = { 木:{sheng:"火",ke:"土"}, 火:{sheng:"土",ke:"金"}, 土:{sheng:"金",ke:"水"}, 金:{sheng:"水",ke:"木"}, 水:{sheng:"木",ke:"火"} };
 
+/* 体用断事项（邵一尘：生出/生入/克出/克入/比肩/比劫） */
+const USE_MATTER = {
+  生出:["病、出行旅行消耗、事业工作付出","泄气，主动付出多"],
+  生入:["灾、工作学习、搬家调动迁移","得外力，有进益"],
+  克出:["争斗、钱财项目投资、置业借款","我克＝占有、收益"],
+  克入:["官非纠纷、官运升职、横财贷款","克我＝压力、约束"],
+  比肩:["家庭纠纷、合作、婚恋","同类相助"],
+  比劫:["小人冲犯、养老、暗昧婚外情","同类相争"]
+};
+
+/* 问卦类别识别 */
 const DIM = [
-  { key:"健康", kw:["病","感冒","咳嗽","发烧","身体","疼","痛","痒","恢复","健康","好","猫","犬","喉咙","咽","鼻","胃","手术","医"] },
-  { key:"财运", kw:["财","钱","彩票","乐透","股票","投资","薪","发薪","工资","偏财","赚","生意","回款","货款"] },
-  { key:"感情", kw:["感情","恋爱","婚","姻","对象","分手","复合","桃花","在一起","男友","女友"] },
-  { key:"事业", kw:["工作","事业","面试","升职","求职","考试","学业","学习","项目","合作","offer"] },
+  { key:"健康", kw:["病","感冒","咳嗽","发烧","身体","疼","痛","痒","恢复","健康","好","猫","犬","喉咙","咽","鼻","胃","手术","医","包","肿","结节","癌"] },
+  { key:"财运", kw:["财","钱","彩票","乐透","股票","投资","薪","发薪","工资","偏财","赚","生意","回款","货款","买卖"] },
+  { key:"感情", kw:["感情","恋爱","婚","姻","对象","分手","复合","桃花","在一起","男友","女友","离婚","结婚"] },
+  { key:"事业", kw:["工作","事业","面试","升职","求职","考试","学业","学习","项目","合作","offer","转行"] },
   { key:"出行", kw:["出行","旅行","出远门","旅游","出差","路","航班","车票","行程"] },
   { key:"失物", kw:["失物","丢","找","遗失","寻","不见","在哪"] },
   { key:"官非", kw:["诉讼","官司","官非","警察","纠纷","口舌","报警"] },
@@ -156,58 +166,142 @@ function land(start, n){ return (start + (n - 1)) % 6; }
 function rel(a,b){ if(a===b) return ["比和","两宫同气，力量集中也易固着"]; if(WX[a].sheng===b) return ["生","前势推动后势，发展较顺"]; if(WX[a].ke===b) return ["克","前势压制后势，推进有阻"]; if(WX[b].sheng===a) return ["被生","后势反哺前势，条件渐补足"]; return ["被克","后势反制前势，局面可能转向"]; }
 function bodyUse(body, branch){ const B=[["子","水",true],["丑","土",false],["寅","木",true],["卯","木",false],["辰","土",true],["巳","火",false],["午","火",true],["未","土",false],["申","金",true],["酉","金",false],["戌","土",true],["亥","水",false]]; const b=B[branch-1]; if(body.e===b[1]) return b[2]?["比肩","时辰与体同气，得同类助力"]:["比劫","同类并见，可能协力也可能竞争分夺"]; const r=rel(b[1],body.e)[0]; if(r==="生") return ["用生体","时辰生扶人宫，外部条件有助"]; if(r==="克") return ["用克体","时辰克制人宫，外部压力或阻碍"]; const r2=rel(body.e,b[1])[0]; if(r2==="生") return ["体生用","主体付出、消耗或主动推动"]; return ["体克用","主体能主动掌控，也伴随克耗"]; }
 
+/* ① 评分：人宫（结果）为核心，地宫（过程）作参考，生克不计分 */
+function judge(h2, h3){
+  const base = h3.score;                    // 人宫核心
+  const process = Math.round(h2.score * 0.5); // 地宫过程参考（半权重）
+  const score = base + process;
+  return score;
+}
+
+/* ② 正面回答：针对所问类型 + 吉凶等级，直接回答 */
+function directAnswer(q, kind, score){
+  const neg = score <= -2, mildNeg = score === -1, mid = score === 0, mildPos = score === 1, pos = score >= 2;
+  if(kind === "健康"){
+    if(neg) return "好转信号不足，建议尽快就医，勿以卦代医";
+    if(mildNeg) return "偏向能好转，但过程可能反复，需就医确认";
+    if(mid) return "转归尚不明确，以检查结果为准";
+    if(mildPos) return "偏向能好，转归向好";
+    return "偏向能好，整体无大碍，静养调理即可";
+  }
+  if(kind === "财运"){
+    if(neg) return "偏向亏损或破财，宜守慎、暂停投入";
+    if(mildNeg) return "收益不佳，先控成本、防破耗";
+    if(mid) return "盈亏不明，先核实信息再动";
+    if(mildPos) return "偏向有小利或进账，宜见好就收";
+    return "偏向有收益，但需控制仓位、不追高";
+  }
+  if(kind === "感情"){
+    if(neg) return "偏向难成或关系受阻，不宜强求";
+    if(mildNeg) return "关系有波折，先观察对方真实态度";
+    if(mid) return "走向未定，看对方持续行动而非言语";
+    if(mildPos) return "偏向有进展，但仍需经营";
+    return "偏向和合、可成，宜稳步推进";
+  }
+  if(kind === "事业"){
+    if(neg) return "偏向不能成或明显受阻，应准备替代方案";
+    if(mildNeg) return "成事难度较大，需先解决卡点";
+    if(mid) return "成败未定，关键条件尚未形成";
+    if(mildPos) return "偏向能成，但要主动落实关键动作";
+    return "偏向能成，条件较有利，宜抓紧推进";
+  }
+  if(kind === "出行"){
+    if(neg) return "偏向不宜出行或行程不顺，宜另择";
+    if(mildNeg) return "出行有阻碍，留足余量、防意外";
+    if(mid) return "可出行，但需确认现实条件";
+    if(mildPos) return "偏向顺利，宜尽快启程";
+    return "出行大吉，主动移动比停留更有利";
+  }
+  if(kind === "失物"){
+    if(neg) return "找回难度大，建议同步挂失或止损";
+    if(mildNeg) return "线索较弱，沿最后位置排查";
+    if(mid) return "去向不明，先确认是否真带出";
+    if(mildPos) return "仍有找回机会，尽快沿路径排查";
+    return "偏向能找回，从固定、原处开始找";
+  }
+  if(kind === "官非"){
+    if(neg) return "偏向不利，官非口舌须防，留好证据";
+    if(mildNeg) return "易生纠纷，谨慎言行、保存凭据";
+    if(mid) return "以书面与证据为准，勿口头承诺";
+    if(mildPos) return "偏向能和解或有利，仍要留证";
+    return "偏向有利，纠纷易解";
+  }
+  if(kind === "人际"){
+    if(neg) return "关系偏紧张，先设边界、避免激化";
+    if(mildNeg) return "有隔阂，先降低期待、观察";
+    if(mid) return "关系平平，以行动而非猜测判断";
+    if(mildPos) return "偏向和顺，可主动沟通";
+    return "关系和合，宜增进往来";
+  }
+  // 默认
+  if(neg) return "偏向不能成或明显受阻";
+  if(mildNeg) return "成事难度较大，先处理阻碍";
+  if(mid) return "成败未定，需继续落实";
+  if(mildPos) return "偏向能成，但需主动推进";
+  return "偏向能成，条件有利";
+}
+
+/* ④ 语境化生克：不同领域下「生/克」的具体含义 */
+function shengKeContext(relType, a, b, kind){
+  // a 为前宫，b 为后宫；relType 为 a 对 b 的关系
+  const sheng = (x,y)=>WX[x].sheng===y;
+  const ke = (x,y)=>WX[x].ke===y;
+  if(kind === "健康"){
+    if(ke(a,b)) return { s:"克", t:`${a}克${b}：` + (a==="金" ? "外伤、手术、器械损伤之象" : a==="木" ? "肝木克脾胃土，消化或皮下结节之象" : a==="火" ? "火克金，炎症波及肺、咽喉" : a==="土" ? "脾胃湿热壅滞" : "水克火，代谢不利"), good:false };
+    if(ke(b,a)) return { s:"被克", t:`${b}克${a}：` + (b==="水" && a==="火" ? "水克火，炎症消退、热势得解（向好）" : b==="金" ? "金克木，外伤或手术信息" : b==="土" ? "土克水，水肿、阻滞" : b==="木" ? "木克土，肝木乘脾" : "火克金，炎症损及肺"), good: b==="水"&&a==="火" };
+    if(sheng(a,b)) return { s:"生", t:`${a}生${b}：` + (a==="火" ? "火势蔓延、炎症加重" : a==="木" ? "木生火，郁而化热" : "气血滋养，趋于恢复"), good: a==="火" ? false : true };
+    return { s:"比和", t:"同气，症状表现集中", good:false };
+  }
+  if(kind === "财运"){
+    if(ke(a,b)) return { s:"克", t:`${a}克${b}：我克为财，主占有、进财、投资`, good:true };
+    if(ke(b,a)) return { s:"被克", t:`${b}克${a}：克我为官鬼，主破财、压力、官非`, good:false };
+    if(sheng(a,b)) return { s:"生", t:`${a}生${b}：我生为耗，主支出、投入、花费`, good:false };
+    return { s:"被生", t:`${b}生${a}：生我为印，主进财、有助`, good:true };
+  }
+  if(kind === "感情"){
+    if(ke(a,b)) return { s:"克", t:`${a}克${b}：一方压制一方，易起争执、争夺`, good:false };
+    if(ke(b,a)) return { s:"被克", t:`${b}克${a}：关系受制，付出感失衡`, good:false };
+    if(sheng(a,b)) return { s:"生", t:`${a}生${b}：互相滋养，关系升温、有助`, good:true };
+    return { s:"被生", t:`${b}生${a}：对方付出更多，关系有进益`, good:true };
+  }
+  if(kind === "事业"){
+    if(ke(a,b)) return { s:"克", t:`${a}克${b}：我克为财/成果，主能拿下、有产出`, good:true };
+    if(ke(b,a)) return { s:"被克", t:`${b}克${a}：克我为官，主考核、压力、上级约束`, good:false };
+    if(sheng(a,b)) return { s:"生", t:`${a}生${b}：我生为付出，主投入、铺路`, good:false };
+    return { s:"被生", t:`${b}生${a}：生我为扶助，主有贵人、资源支持`, good:true };
+  }
+  // 通用
+  if(relType==="生") return { s:"生", t:`${a}生${b}：前势推动后势，发展较顺`, good:true };
+  if(relType==="克") return { s:"克", t:`${a}克${b}：前势压制后势，推进有阻`, good:false };
+  if(relType==="被生") return { s:"被生", t:`${b}生${a}：后势反哺前势，条件补足`, good:true };
+  if(relType==="被克") return { s:"被克", t:`${b}克${a}：后势反制前势，局面转向`, good:false };
+  return { s:"比和", t:"两宫同气，力量集中", good:false };
+}
+
 /* DeepSeek key */
 let dsKey = localStorage.getItem("ds_key") || "";
 document.getElementById("key").value = dsKey;
 document.getElementById("keyStatus").innerText = dsKey ? "已保存" : "";
 function saveKey(){ dsKey = document.getElementById("key").value.trim(); if(dsKey){ localStorage.setItem("ds_key", dsKey); document.getElementById("keyStatus").innerText = "已保存"; } else { localStorage.removeItem("ds_key"); document.getElementById("keyStatus").innerText = ""; } }
 
-/* ============ 起卦方式 ============ */
+/* 起卦方式 */
 let curMode = "num";
 let curNums = [1, 2, 3];
-
 function setMode(mode){
   curMode = mode;
   ["num","clock","lunar","manual"].forEach(m=>{
-    const tab = document.getElementById("tab-"+m);
-    const box = document.getElementById("mode-"+m);
-    if(m === mode){
-      tab.className = "py-2 rounded-lg text-xs font-medium bg-amber-400/20 text-amber-300 border border-amber-400/40 transition";
-      box.classList.remove("hidden");
-    } else {
-      tab.className = "py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 transition";
-      box.classList.add("hidden");
-    }
+    const tab = document.getElementById("tab-"+m), box = document.getElementById("mode-"+m);
+    if(m === mode){ tab.className = "py-2 rounded-lg text-xs font-medium bg-amber-400/20 text-amber-300 border border-amber-400/40 transition"; box.classList.remove("hidden"); }
+    else { tab.className = "py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 transition"; box.classList.add("hidden"); }
   });
 }
-
 function hourToBranch(hour){ if(hour === 23 || hour === 0) return 1; return Math.floor((hour + 1) / 2) + 1; }
 function norm(n){ return n === 0 ? 10 : n; }
-
-function fillClock(){
-  const d = new Date();
-  curNums = [norm(d.getHours()), norm(d.getMinutes()), norm(d.getSeconds())];
-  document.getElementById("clockShow").innerText = `取到：${curNums.join(" · ")}`;
-  document.getElementById("hour").value = hourToBranch(d.getHours());
-}
-
-function fillLunar(){
-  const d = new Date();
-  let month = 1, day = 1, label = "";
-  try {
-    const parts = new Intl.DateTimeFormat("zh-CN-u-ca-chinese", { month:"numeric", day:"numeric" }).formatToParts(d);
-    month = parseInt(parts.find(p=>p.type==="month")?.value) || 1;
-    day = parseInt(parts.find(p=>p.type==="day")?.value) || 1;
-    label = new Intl.DateTimeFormat("zh-CN-u-ca-chinese", { month:"long", day:"numeric" }).format(d);
-  } catch(e){ label = month + "月" + day + "日"; }
-  const branch = hourToBranch(d.getHours());
-  curNums = [month, day, branch];
-  document.getElementById("lunarShow").innerText = `取到：${label} · ${branch}时辰（${curNums.join(" · ")}）`;
-  document.getElementById("hour").value = branch;
-}
-
+function fillClock(){ const d = new Date(); curNums = [norm(d.getHours()), norm(d.getMinutes()), norm(d.getSeconds())]; document.getElementById("clockShow").innerText = `取到：${curNums.join(" · ")}`; document.getElementById("hour").value = hourToBranch(d.getHours()); }
+function fillLunar(){ const d = new Date(); let month=1, day=1, label=""; try { const p = new Intl.DateTimeFormat("zh-CN-u-ca-chinese", { month:"numeric", day:"numeric" }).formatToParts(d); month = parseInt(p.find(x=>x.type==="month")?.value)||1; day = parseInt(p.find(x=>x.type==="day")?.value)||1; label = new Intl.DateTimeFormat("zh-CN-u-ca-chinese", { month:"long", day:"numeric" }).format(d); } catch(e){ label = month+"月"+day+"日"; } const branch = hourToBranch(d.getHours()); curNums = [month, day, branch]; document.getElementById("lunarShow").innerText = `取到：${label} · ${branch}时辰（${curNums.join(" · ")}）`; document.getElementById("hour").value = branch; }
 setMode("num");
 
+/* ============ 主流程 ============ */
 function cast(){
   const q = document.getElementById("q").value.trim() || "未记名问事";
   let n1, n2, n3;
@@ -223,131 +317,140 @@ function cast(){
   const use = bodyUse(h3, h);
   const kind = detectKind(q);
 
-  const color = { 大安:"text-emerald-400",留连:"text-amber-500",速喜:"text-rose-400",赤口:"text-orange-300",小吉:"text-sky-400",空亡:"text-stone-400" };
-  const box = { 大安:"border-emerald-500/40",留连:"border-amber-500/40",速喜:"border-rose-500/40",赤口:"border-orange-500/40",小吉:"border-sky-500/40",空亡:"border-stone-500/40" };
+  const score = judge(h2, h3);
+  const tend = score>=3?"整体偏吉，条件与结果互相支持":score>=1?"偏吉，但有需要留意之处":score>=-1?"吉凶交错，结果取决于现实行动":score>=-3?"偏凶，宜先处理风险再推进":"明显不利，不宜勉强，先止损或重设目标";
+  const answer = directAnswer(q, kind, score);
+  const ctx1 = shengKeContext(r1[0], h1.e, h2.e, kind);  // 天→地
+  const ctx2 = shengKeContext(r2[0], h2.e, h3.e, kind);  // 地→人
+  const useM = USE_MATTER[use[0]] || ["",""];
 
-  const base = [2,-1,1,-2,1,-2][i3];
-  const score = base + (r2[0]==="生"||r2[0]==="被生"?1:r2[0]==="克"||r2[0]==="被克"?-1:0) + (use[0]==="用生体"||use[0]==="比肩"?1:use[0]==="用克体"||use[0]==="体生用"||use[0]==="比劫"?-1:0);
-  const tend = score>=2?"整体偏吉，条件与结果互相支持":score>=0?"谨慎偏吉，有成事条件但需主动落实":score>=-2?"偏向受阻，宜先处理风险再推进":"当前明显不利，不宜勉强，先止损或重设目标";
+  const color = { 大安:"text-emerald-400",留连:"text-amber-500",速喜:"text-rose-400",赤口:"text-orange-300",小吉:"text-sky-400",空亡:"text-stone-400" };
+  const boxc = { 大安:"border-emerald-500/40",留连:"border-amber-500/40",速喜:"border-rose-500/40",赤口:"border-orange-500/40",小吉:"border-sky-500/40",空亡:"border-stone-500/40" };
 
   document.getElementById("result").classList.remove("hidden");
   document.getElementById("result").innerHTML = `
-    <div class="bg-[#1e2029] border border-slate-800 rounded-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <span class="text-xs text-amber-400/80">针对「${q}」</span>
-        <span class="text-xs px-2.5 py-1 rounded-full border border-slate-700 ${score>=0?"text-emerald-400":"text-rose-400"}">${score>=0?"偏吉":"偏凶"}</span>
-      </div>
+  <!-- ===== 本地核心（不可改） ===== -->
+  <div class="bg-[#1e2029] border border-slate-800 rounded-2xl p-5 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <span class="text-sm font-bold text-slate-200">🔒 核心卦理（本地锁定）</span>
+      <span class="text-xs px-2.5 py-1 rounded-full border border-slate-700 ${score>=0?"text-emerald-400":"text-rose-400"}">${score>=1?"偏吉":score<=-1?"偏凶":"中性"}</span>
+    </div>
 
-      <div class="grid grid-cols-3 gap-2 text-center">
-        ${[[h1,"天宫·起因",n1],[h2,"地宫·过程",n2],[h3,"人宫·结果",n3]].map(([g,label,num])=>`
-          <div class="bg-slate-900 border ${box[g.n]} rounded-xl p-3">
-            <div class="text-[10px] text-slate-500">${label}</div>
-            <div class="text-xl font-bold ${color[g.n]}">${g.n}</div>
-            <div class="text-[10px] text-slate-400">${g.e} · ${g.beast} · ${g.luck}</div>
-            <div class="text-[10px] text-slate-500 mt-1">取数 ${num}</div>
-          </div>`).join('')}
-      </div>
+    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
+      <div class="text-xs text-amber-400/80 font-semibold mb-1">排盘推算过程</div>
+      <p class="text-slate-300 text-xs font-mono leading-relaxed">
+        天宫（取数 ${n1}）：大安起顺数 ${n1} 位${n1>6?`（${n1}÷6=${Math.floor(n1/6)}余${n1%6}）`:''} → 落【${h1.n}】<br>
+        地宫（取数 ${n2}）：以【${h1.n}】起顺数 ${n2} 位 → 落【${h2.n}】<br>
+        人宫（取数 ${n3}）：以【${h2.n}】起顺数 ${n3} 位${n3>6?`（${n3}÷6=${Math.floor(n3/6)}余${n3%6}）`:''} → 落【${h3.n}】
+      </p>
+    </div>
 
-      <div class="space-y-2 text-sm leading-relaxed">
-        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
-          <div class="text-xs text-amber-400/80 font-semibold mb-1">直接结论</div>
-          <p>落【${h3.n}】宫，${h3.trait}</p>
-          <p class="mt-1 text-slate-300">${tend}。</p>
-        </div>
+    <div class="grid grid-cols-3 gap-2 text-center">
+      ${[[h1,"天宫·起因",n1],[h2,"地宫·过程",n2],[h3,"人宫·结果",n3]].map(([g,label,num])=>`
+        <div class="bg-slate-900 border ${boxc[g.n]} rounded-xl p-3">
+          <div class="text-[10px] text-slate-500">${label}</div>
+          <div class="text-xl font-bold ${color[g.n]}">${g.n}</div>
+          <div class="text-[10px] text-slate-400">${g.e} · ${g.beast} · ${g.luck}</div>
+          <div class="text-[10px] text-slate-500 mt-1">取数 ${num}</div>
+        </div>`).join('')}
+    </div>
 
-        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
-          <div class="text-xs text-amber-400/80 font-semibold mb-1">三宫脉络</div>
-          <p>起因在【${h1.n}】，过程历经【${h2.n}】，结果落于【${h3.n}】。</p>
-          <p class="text-slate-400 text-xs mt-1">天→地：${h1.n}${r1[0]}${h2.n}（${r1[1]}）｜地→人：${h2.n}${r2[0]}${h3.n}（${r2[1]}）</p>
-        </div>
+    <div class="bg-slate-900/70 border border-amber-400/30 rounded-xl p-3">
+      <div class="text-xs text-amber-400/80 font-semibold mb-1">直接回答</div>
+      <p class="text-base font-bold text-slate-100">${answer}</p>
+      <p class="text-slate-400 text-xs mt-1">综合方向：${tend}</p>
+    </div>
 
-        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
-          <div class="text-xs text-amber-400/80 font-semibold mb-1">时辰体用</div>
-          <p>体：${h3.n}（${h3.e}）· 用：时辰（${use[0]}）——${use[1]}</p>
-        </div>
+    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
+      <div class="text-xs text-amber-400/80 font-semibold mb-1">三宫脉络与五行生克</div>
+      <p class="text-slate-300 text-sm">起因【${h1.n}】→ 过程【${h2.n}】→ 结果【${h3.n}】。</p>
+      <p class="text-slate-400 text-xs mt-1">天→地：${h1.n}${ctx1.s}${h2.n}——${ctx1.t}</p>
+      <p class="text-slate-400 text-xs">地→人：${h2.n}${ctx2.s}${h3.n}——${ctx2.t}</p>
+    </div>
 
-        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
-          <div class="text-xs text-amber-400/80 font-semibold mb-1">${kind}类象（以结果宫断）</div>
-          <p class="text-slate-300">${h3.kind[kind] || h3.kind.事业}</p>
-          <p class="text-slate-400 text-xs mt-1">藏干：${h3.gan} · 方位：${h3.dir} · 身体：${h3.body}</p>
-        </div>
+    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
+      <div class="text-xs text-amber-400/80 font-semibold mb-1">时辰体用</div>
+      <p class="text-slate-300 text-sm">体：${h3.n}（${h3.e}）· 用：时辰（${use[0]}）——${use[1]}</p>
+      <p class="text-slate-400 text-xs mt-1">体用所主：${useM[0]}（${useM[1]}）</p>
+    </div>
 
-        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
-          <div class="text-xs text-amber-400/80 font-semibold mb-1">行动建议</div>
-          <p class="text-slate-300">${advice(h3.n, kind, score)}</p>
-        </div>
+    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
+      <div class="text-xs text-amber-400/80 font-semibold mb-1">${kind}类象（以结果宫【${h3.n}】断）</div>
+      <p class="text-slate-300 text-sm">${h3.asp[kind] || h3.asp.事业}</p>
+      <p class="text-slate-400 text-xs mt-1">六神特性：${h3.trait}</p>
+      <p class="text-slate-400 text-xs">藏干：${h3.gan} · 方位：${h3.dir} · 身体：${h3.body} · 数应：${h3.num}</p>
+    </div>
 
-        <div id="aiBox" class="bg-slate-900/70 border border-amber-400/30 rounded-xl p-3">
-          <div class="text-xs text-amber-400/80 font-semibold mb-1">🤖 AI 深度解卦</div>
-          <div id="aiContent" class="text-slate-300 whitespace-pre-wrap">${dsKey ? '<span class="ai-loading text-slate-400">正在请 DeepSeek 解卦</span>' : '<span class="text-slate-500">未启用。展开上方「启用 DeepSeek AI 深度解卦」填入 API Key 即可。</span>'}</div>
-        </div>
+    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3">
+      <div class="text-xs text-amber-400/80 font-semibold mb-1">行动建议</div>
+      <p class="text-slate-300 text-sm">${advice(h3.n, kind, score)}</p>
+    </div>
+  </div>
 
-        <p class="text-slate-500 text-xs pt-1">验证方式：以现实发生的客观结果为准；若现实与此相反，以现实为准。同一件事条件未变前勿重复起卦。</p>
-      </div>
-    </div>`;
+  <!-- ===== AI 扩充 ===== -->
+  <div class="bg-[#1e2029] border border-slate-800 rounded-2xl p-5">
+    <div class="text-sm font-bold text-slate-200 mb-3">🤖 AI 深度解读（扩充，不改变上方核心）</div>
+    <div id="aiContent" class="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">${dsKey ? '<span class="ai-loading text-slate-400">正在请 DeepSeek 解卦</span>' : '<span class="text-slate-500">未启用。展开输入区「启用 DeepSeek AI 深度解卦」填入 API Key 即可。</span>'}</div>
+  </div>
+
+  <p class="text-slate-500 text-xs text-center">验证方式：以现实客观结果为准；若现实与此相反，以现实为准。同一件事条件未变前勿重复起卦。</p>`;
+
   document.getElementById("result").scrollIntoView({behavior:"smooth"});
-
-  if(dsKey) askAI(q, { h1, h2, h3, r1, r2, use, kind });
+  if(dsKey) askAI(q, { h1, h2, h3, r1, r2, use, kind, n1, n2, n3, tend, answer, ctx1, ctx2, useM });
 }
 
 function advice(n, kind, score){
-  const map = {
-    大安:"宜守不宜冒进，按既定条件稳步落实，静养守成。",
-    留连:"先解除中间卡点与拖延环节，设明确期限，别急着扩张。",
-    速喜:"抓住眼前的短期窗口，尽快完成一个可验证的关键动作，但别拖。",
-    赤口:"降低冲突与损耗，暂停高风险动作，重要沟通留痕、谨防口舌。",
-    小吉:"主动利用流动、协作与人脉推进，但每一步以真实反馈为准，加倍努力。",
-    空亡:"先核实前提是否成立，暂停追加投入，准备替代或退出方案。"
-  };
-  const kmap = {
-    健康:"如有不适，急症或严重症状请立即就医，勿以卦代医。",
-    财运:"控制预算与仓位，不借贷、不追损，先算净盈亏。",
-    感情:"看对方持续行动而非一时言语，边界与自尊优先。",
-    事业:"把外部承诺转成可检查的节点和书面条件。",
-    出行:"以官方通知、票务和现实交通条件为准，安全第一。",
-    失物:"沿最后位置、经手人和移动路径排查，必要时挂失。"
-  };
+  const map = { 大安:"宜守不宜冒进，按既定条件稳步落实，静养守成。", 留连:"先解除中间卡点与拖延环节，设明确期限，别急着扩张。", 速喜:"抓住眼前的短期窗口，尽快完成一个可验证的关键动作，但别拖。", 赤口:"降低冲突与损耗，暂停高风险动作，重要沟通留痕、谨防口舌。", 小吉:"主动利用流动、协作与人脉推进，但每一步以真实反馈为准，加倍努力。", 空亡:"先核实前提是否成立，暂停追加投入，准备替代或退出方案。" };
+  const kmap = { 健康:"如有不适，急症或严重症状请立即就医，勿以卦代医。", 财运:"控制预算与仓位，不借贷、不追损，先算净盈亏。", 感情:"看对方持续行动而非一时言语，边界与自尊优先。", 事业:"把外部承诺转成可检查的节点和书面条件。", 出行:"以官方通知、票务和现实交通条件为准，安全第一。", 失物:"沿最后位置、经手人和移动路径排查，必要时挂失。", 官非:"留存书面与证据，勿口头承诺，必要时咨询专业意见。", 人际:"以行动而非猜测判断，安全、边界、个人承受力优先。" };
   return `${map[n]}${kmap[kind] ? " "+kmap[kind] : ""}`;
 }
 
+/* ============ AI 扩充（DeepSeek） ============ */
 async function askAI(q, ctx){
-  const { h1, h2, h3, r1, r2, use, kind } = ctx;
+  const { h1, h2, h3, r1, r2, use, kind, n1, n2, n3, tend, answer, ctx1, ctx2, useM } = ctx;
   const box = document.getElementById("aiContent");
-  const system = `你是小六壬解卦师，精通邵一尘道家传承六宫体系（大安木/留连土/速喜火/赤口金/小吉水/空亡土）。用户会提供所问之事与三宫排盘结果。
+  const system = `你是小六壬解卦师，精通邵一尘道家传承六宫体系（大安木/留连土/速喜火/赤口金/小吉水/空亡土）。你会收到本地离线引擎锁定的排盘过程、核心结论与三宫格局。你的任务：以本地核心为纲，扩充成完整、详细、贴合所问的深度解读，并说明推理过程。
 
 要求：
-1. 第一句直接回答用户的问题（能不能、会不会、偏吉偏凶），不要"本卦结论""整体而言"这类标签。
-2. 用自然的第一人称口吻，把排盘结果翻译成贴合所问的具体分析，讲清因果链（起因→过程→结果→时辰趋势），解释为什么是这个结论。
-3. 给出2-3条具体、可执行、可验证的建议，落到用户这件事上，不要万能套话。
-4. 涉及健康、财务、法律、安全时，提醒以专业意见和现实为准，不替代专业判断。
-5. 不编造事实，不绝对化（不用"必然""一定"），应期只作观察参考。
-6. 直接输出纯文本，分段，不要 Markdown 标记，不要"作为AI""根据模型"等元话语。字数 200-400 字。`;
+1. 先简要复述排盘过程（三宫如何推算落宫），再展开解读。
+2. 逐宫解读五行象义，落到用户所问的具体场景（问健康就落到身体部位/症状/转归，问财运落到资金/盈亏，问感情落到关系/行动）。
+3. 结合五行生克、时辰体用、六神特性，讲清"因为哪个宫、哪种关系，所以得到这个结论"的推理链。
+4. 结合所问领域，补充相关常识与自我排查建议，并给出明确的就医/止损/安全边界预警。
+5. 给出2-3条具体、可执行、可验证的建议。
+6. 本地锁定的直接结论与吉凶方向不可改变，只能扩充解释，不得推翻；不编造事实，不绝对化（不用"必然""一定"），应期只作观察参考。
+7. 输出纯文本分段，250-500字，不要 Markdown 标记，不要"作为AI""根据模型"等元话语。`;
   const user = `所问之事：${q}
 
-三宫排盘：
-- 天宫（起因）：${h1.n}（${h1.e}·${h1.beast}·${h1.luck}）
-- 地宫（过程）：${h2.n}（${h2.e}·${h2.beast}·${h2.luck}）
-- 人宫（结果）：${h3.n}（${h3.e}·${h3.beast}·${h3.luck}）
+【排盘过程】
+天宫（取数${n1}）：大安起顺数${n1}位 → 落【${h1.n}】
+地宫（取数${n2}）：以【${h1.n}】起顺数${n2}位 → 落【${h2.n}】
+人宫（取数${n3}）：以【${h2.n}】起顺数${n3}位 → 落【${h3.n}】
 
-五行关系：天→地 ${h1.n}${r1[0]}${h2.n}；地→人 ${h2.n}${r2[0]}${h3.n}
-时辰体用：${use[0]}（${use[1]}）
-人宫特性：${h3.trait}
-人宫${kind}类象：${h3.kind[kind] || h3.kind.事业}
-藏干：${h3.gan}；方位：${h3.dir}
+【本地锁定的核心结论（不可改）】
+直接回答：${answer}
+综合方向：${tend}
 
-请解卦。`;
+【三宫格局与事实】
+- 三宫：${h1.n}（${h1.e}·${h1.beast}·${h1.luck}）→ ${h2.n}（${h2.e}·${h2.beast}·${h2.luck}）→ ${h3.n}（${h3.e}·${h3.beast}·${h3.luck}）
+- 天→地：${h1.n}${ctx1.s}${h2.n}（${ctx1.t}）
+- 地→人：${h2.n}${ctx2.s}${h3.n}（${ctx2.t}）
+- 时辰体用：${use[0]}（${use[1]}；所主：${useM[0]}）
+- 结果宫特性：${h3.trait}
+- 结果宫${kind}类象：${h3.asp[kind] || h3.asp.事业}
+- 藏干：${h3.gan}；方位：${h3.dir}；身体：${h3.body}；数应：${h3.num}
+
+请基于以上本地核心，扩充成完整深度解读。`;
 
   try {
     const resp = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + dsKey },
-      body: JSON.stringify({ model: "deepseek-flash", temperature: 0.6, max_tokens: 800, messages: [ { role:"system", content:system }, { role:"user", content:user } ] })
+      body: JSON.stringify({ model: "deepseek-flash", temperature: 0.6, max_tokens: 1200, messages: [ { role:"system", content:system }, { role:"user", content:user } ] })
     });
     const data = await resp.json();
-    if(!resp.ok) { box.innerHTML = `<span class="text-rose-400">解卦失败：${data?.error?.message || resp.status}</span>`; return; }
-    const text = data?.choices?.[0]?.message?.content || "（无内容）";
-    box.innerText = text;
-  } catch(e) {
+    if(!resp.ok){ box.innerHTML = `<span class="text-rose-400">解卦失败：${data?.error?.message || resp.status}</span>`; return; }
+    box.innerText = data?.choices?.[0]?.message?.content || "（无内容）";
+  } catch(e){
     box.innerHTML = `<span class="text-rose-400">请求出错：${e.message}。请检查网络或 API Key。</span>`;
   }
 }
